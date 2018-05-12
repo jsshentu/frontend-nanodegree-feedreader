@@ -96,12 +96,20 @@ $(function() {
          * Remember, loadFeed() is asynchronous so this test will require
          * the use of Jasmine's beforeEach and asynchronous done() function.
          */
-         beforeEach(() => {
 
+         //run loadFeed so that the entries will be attached to the DOM before testing
+         beforeEach((done) => {
+            loadFeed(0, () => {
+                done();
+            });
          });
 
-         it('there is at least a single .entry element within the .feed container', () => {
-            
+         //using length to test if there is at least one entry in the .feed container
+         it('there is at least a single .entry element within the .feed container', (done) => {
+            //get the array-like object
+            let feedList = $('.feed');
+            expect(feedList.children.length).not.toBe(0);
+            done();
          });
     });
 
@@ -113,7 +121,21 @@ $(function() {
          * by the loadFeed function that the content actually changes.
          * Remember, loadFeed() is asynchronous.
          */
+         let before;
+         beforeEach((done) => {
+            loadFeed(0, () => {
+                before = $('.feed').html();
+                loadFeed(1, () => {
+                    done();
+                });
+            });
+         });
 
+         it('the content actually changes', (done) => {
+            let after = $('.feed').html();
+            expect(after).not.toBe(before);
+            done();
+         });
     });
         
 }());
